@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Grimpeur</title>
+</head>
+<body>
+
+    <h1>Page de Performances</h1>
+    <p>Identifiant du grimpeur : <span id="climberId"></span></p>
+
+    <ul id="perfList"></ul>
+
+    <div id="blocContainer"></div>
+    
+    <button onclick="logout()">Se déconnecter</button>
+
+    <script>
+        // Partie qui gère qui est l'utilisateur qui s'est connecté
+        const climberId = localStorage.getItem("climberId");
+        if (climberId) {
+            document.getElementById("climberId").textContent = climberId;
+        } else {
+            window.location.href = "login.html";
+        }
+
+        // 📌 Fonction pour se déconnecter
+        function logout() {
+            localStorage.removeItem("climberId"); // Supprime l'ID stocké
+            window.location.href = "login.html"; // Redirige vers la connexion
+        }
+
+        function getBlocs() {
+            fetch("http://localhost:3000/blocs")
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById("blocContainer");
+                container.innerHTML = ""; 
+    
+                data.forEach(bloc => {
+                    const blocDiv = document.createElement("div");
+                    blocDiv.classList.add("bloc-item"); // Pour styliser plus tard en CSS
+                    blocDiv.innerHTML = `
+                        <span>${bloc.blocName} - Couleur : ${bloc.color}</span>
+                        <input type="checkbox" data-bloc-id="${bloc.blocId}" onchange="toggleBloc(this, ${bloc.blocId})">
+                    `;
+                    container.appendChild(blocDiv);
+                });
+                getPerf();
+            })
+            .catch(error => console.error("Erreur:", error));
+        }
+        
+        // 📌 Fonction appelée lorsqu'on coche/décoche
+        function toggleBloc(checkbox, blocId) {
+            if (checkbox.checked) {
+                addPerf(blocId);
+            } else {
+                deletePerf(blocId); // Fonction g() appelée quand on décoche
+            }
+        }
+        
+        function addPerf(blocId) {
+            fetch("http://localhost:3000/addPerf", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ blocId: blocId, climberId: climberId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Erreur:", data.error);
+                } else {
+                    console.log("Succès:", data.message);
+                }
+            })
+            .catch(error => console.error("Erreur:", error));
+        }
+        
+        
+        function deletePerf(blocId) {
+            fetch("http://localhost:3000/perf", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ blocId: blocId, climberId: climberId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("Erreur:", data.error);
+                } else {
+                    console.log("Succès:", data.message);
+                }
+            })
+            .catch(error => console.error("Erreur:", error));
+        }
+        
+        
+        function getPerf() {
+            fetch("http://localhost:3000/perf", {
+                method : "POST",
+                headers : {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({climberId:climberId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById("perfList");
+                list.innerHTML = "";
+                data.forEach(perf => {
+                    const checkbox = document.querySelector(`input[data-bloc-id='${perf.blocId}']`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    } else {
+                        console.log(perf.blocId);
+                    }
+                });
+            })
+            .catch(error => console.error("Erreur:", error));
+        }
+        
+        
+        
+        
+        getBlocs();
+
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Grimpeurs</title>
+</head>
+<body>
+    <h1>Liste des Grimpeurs</h1>
+
+    <!-- Formulaire d'ajout -->
+    <form id="addClimberForm">
+        <input type="text" id="name" placeholder="Nom" required>
+        <input type="email" id="mail" placeholder="Email" required>
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <button onclick="fetchClimbers()">Charger la liste</button>
+    <ul id="climberList"></ul>
+
+    <script>
+        // Fonction pour récupérer la liste des grimpeurs
+        function fetchClimbers() {
+            fetch("http://localhost:3000/climbers")
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("climberList");
+                    list.innerHTML = "";
+                    data.forEach(climber => {
+                        const li = document.createElement("li");
+                        li.textContent = `${climber.name} - ${climber.mail}`;
+                        list.appendChild(li);
+                    });
+                })
+                .catch(error => console.error("Erreur:", error));
+        }
+
+        // Fonction pour ajouter un grimpeur
+        document.getElementById("addClimberForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+            
+            const name = document.getElementById("name").value;
+            const mail = document.getElementById("mail").value;
+
+            fetch("http://localhost:3000/climbers", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, mail })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Succès:", data);
+                fetchClimbers(); // Recharger la liste
+            })
+            .catch(error => console.error("Erreur:", error));
+        });
+
+        // Charger la liste au démarrage
+        fetchClimbers();
+    </script>
+</body>
+</html>

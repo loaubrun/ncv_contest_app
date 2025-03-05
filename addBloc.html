@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Bloc</title>
+</head>
+<body>
+
+    <h1>Ajouter un Bloc</h1>
+
+    <!-- Formulaire pour ajouter un bloc avec une image -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="blocName">Nom du Bloc :</label>
+        <input type="text" id="blocName" name="blocName" required>
+        <br>
+
+        <label for="color">Couleur :</label>
+        <input type="text" id="color" name="color" required>
+        <br>
+        <label for="juged">Bloc jugé :</label>
+        <input type="checkbox" id="juged" name="juged">
+        <br>
+        <label for="imageInput">Image du Bloc :</label>
+        <input type="file" id="imageInput" name="image" accept="image/*" required>
+        <br>
+
+        <button type="submit">Ajouter</button>
+    </form>
+
+    <p id="uploadStatus"></p>
+
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", function (event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+
+            const fileInput = document.getElementById("imageInput");
+            if (!fileInput.files.length) {
+                alert("Veuillez sélectionner une image !");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("blocName", document.getElementById("blocName").value);
+            formData.append("color", document.getElementById("color").value);
+            formData.append("image", fileInput.files[0]);
+            formData.append("juged", document.getElementById("juged").checked ? 1 : 0);
+
+            fetch("http://localhost:3000/addBloc", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("uploadStatus").textContent = data.message;
+            })
+            .catch(error => console.error("Erreur :", error));
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classement Bloc</title>
+</head>
+<body>
+
+    <button onclick="fetchClimbers()">Mettre à jour</button>
+    <ul id="climberList"></ul>
+
+    <script>
+        // Fonction pour récupérer la liste des grimpeurs
+        function fetchClimbers() {
+            fetch("http://localhost:3000/classementBloc")
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById("climberList");
+                    let i = 1;
+                    list.innerHTML = "";
+                    data.forEach(climber => {
+                        const li = document.createElement("li");
+                        li.textContent = `${i} : ${climber.name} - ${climber.score}pts`;
+                        i++;
+                        list.appendChild(li);
+                    });
+                })
+                .catch(error => console.error("Erreur:", error));
+        }
+
+        // Fonction pour ajouter un grimpeur
+        document.getElementById("addClimberForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Empêche le rechargement de la page
+            
+            const name = document.getElementById("name").value;
+            const mail = document.getElementById("mail").value;
+
+            fetch("http://localhost:3000/climbers", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, mail })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Succès:", data);
+                fetchClimbers(); // Recharger la liste
+            })
+            .catch(error => console.error("Erreur:", error));
+        });
+
+        // Charger la liste au démarrage
+        fetchClimbers();
+    </script>
+</body>
+</html>

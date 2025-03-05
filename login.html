@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+</head>
+<body>    
+    <form id="loginForm">
+        <label for="name">Nom :</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="mail">Email :</label>
+        <input type="email" id="mail" name="mail" required>
+
+        <button type="submit">Se connecter</button>
+    </form>
+
+    <p id="message"></p>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value;
+            const mail = document.getElementById("mail").value;
+
+            try {
+                const response = await fetch("http://localhost:3000/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ name, mail })
+                });
+
+                const data = await response.json();
+
+                if (data.id !== -1) {
+                    localStorage.setItem("climberId", data.id);
+                    window.location.href = "perf.html";
+                } else {
+                    document.getElementById("message").textContent = "Nom ou mail incorrect.";
+                    document.getElementById("message").style.color = "red";
+                }
+            } catch (error) {
+                console.error("Erreur lors de la requête:", error);
+                document.getElementById("message").textContent = "Erreur de connexion au serveur.";
+                document.getElementById("message").style.color = "red";
+            }
+        });
+    </script>
+
+</body>
+</html>
