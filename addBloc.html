@@ -21,6 +21,16 @@
         <label for="juged">Bloc jugé :</label>
         <input type="checkbox" id="juged" name="juged">
         <br>
+
+        <label for="juged">Numéro secteur :</label>
+        <select id="zone">
+            <option value="1">Secteur 1</option>
+            <option value="2">Secteur 2</option>
+            <option value="3">Secteur 3</option>
+            <option value="4">Secteur 4</option>
+        </select>
+        <br>
+
         <label for="imageInput">Image du Bloc :</label>
         <input type="file" id="imageInput" name="image" accept="image/*" required>
         <br>
@@ -45,7 +55,11 @@
             formData.append("color", document.getElementById("color").value);
             formData.append("image", fileInput.files[0]);
             formData.append("juged", document.getElementById("juged").checked ? 1 : 0);
+            formData.append("zone", document.getElementById("zone").value);
 
+            
+
+            console.log("ko");
             fetch("http://localhost:3000/addBloc", {
                 method: "POST",
                 body: formData
@@ -53,6 +67,7 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById("uploadStatus").textContent = data.message;
+                document.getElementById("uploadForm").reset();
             })
             .catch(error => console.error("Erreur :", error));
         });

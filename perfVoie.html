@@ -13,7 +13,7 @@
 
 
     <label for="zoneSelect">Choisir une zone :</label>
-    <select id="zoneSelect" onchange="afficheBlocs(this.value)">
+    <select id="zoneSelect" onchange="afficheVoies(this.value)">
         <option value="all">Toutes les zones</option>
         <option value="1">Zone 1</option>
         <option value="2">Zone 2</option>
@@ -22,7 +22,7 @@
 
     <ul id="perfList"></ul>
 
-    <div id="blocContainer"></div>
+    <div id="voieContainer"></div>
     
     <button onclick="logout()">Se déconnecter</button>
 
@@ -41,24 +41,24 @@
             window.location.href = "login.html"; // Redirige vers la connexion
         }
 
-        function getBlocs() {
-            fetch("http://localhost:3000/blocs")
+        function getVoies() {
+            fetch("http://localhost:3000/voies")
             .then(response => response.json())
             .then(data => {
-                const container = document.getElementById("blocContainer");
+                const container = document.getElementById("voieContainer");
                 container.innerHTML = ""; 
     
-                data.forEach(bloc => {
-                    const blocDiv = document.createElement("div");
-                    blocDiv.classList.add("bloc-item", "visible");
-                    blocDiv.setAttribute("zone", bloc.zone); 
-                    blocDiv.innerHTML = `
-                        <span>${bloc.blocName} - Couleur : ${bloc.color}</span>
-                        <input type="checkbox" data-bloc-id="${bloc.blocId}" 
-                        ${bloc.juged == 1 ? "disabled" : ""}
-                        onchange="toggleBloc(this, ${bloc.blocId})">
+                data.forEach(voie => {
+                    const voieDiv = document.createElement("div");
+                    voieDiv.classList.add("voie-item", "visible");
+                    voieDiv.setAttribute("zone", voie.zone); 
+                    voieDiv.innerHTML = `
+                        <span>${voie.voieName} - Couleur : ${voie.color}</span>
+                        <input type="checkbox" voie-id="${voie.voieId}" 
+                        ${voie.juged == 1 ? "disabled" : ""}
+                        onchange="toggleVoie(this, ${voie.voieId})">
                         `;
-                    container.appendChild(blocDiv);
+                    container.appendChild(voieDiv);
                 });
                 getPerf();
             })
@@ -66,21 +66,21 @@
         }
         
         // 📌 Fonction appelée lorsqu'on coche/décoche
-        function toggleBloc(checkbox, blocId) {
+        function toggleVoies(checkbox, voieId) {
             if (checkbox.checked) {
-                addPerf(blocId);
+                addPerf(voieId);
             } else {
-                deletePerf(blocId);
+                deletePerf(voieId);
             }
         }
         
-        function addPerf(blocId) {
-            fetch("http://localhost:3000/addPerf", {
+        function addPerf(voieId) {
+            fetch("http://localhost:3000/addPerfVoie", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ blocId: blocId, climberId: climberId })
+                body: JSON.stringify({ voieId: voieId, climberId: climberId })
             })
             .then(response => response.json())
             .then(data => {
@@ -93,13 +93,13 @@
             .catch(error => console.error("Erreur:", error));
         }
              
-        function deletePerf(blocId) {
-            fetch("http://localhost:3000/perf", {
+        function deletePerf(voieId) {
+            fetch("http://localhost:3000/perfVoie", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ blocId: blocId, climberId: climberId })
+                body: JSON.stringify({ voieId: voieId, climberId: climberId })
             })
             .then(response => response.json())
             .then(data => {
@@ -113,7 +113,7 @@
         }
          
         function getPerf() {
-            fetch("http://localhost:3000/perf", {
+            fetch("http://localhost:3000/perfVoie", {
                 method : "POST",
                 headers : {
                     "Content-Type": "application/json"
@@ -125,30 +125,30 @@
                 const list = document.getElementById("perfList");
                 list.innerHTML = "";
                 data.forEach(perf => {
-                    const checkbox = document.querySelector(`input[data-bloc-id='${perf.blocId}']`);
+                    const checkbox = document.querySelector(`input[voieId='${perf.voieId}']`);
                     if (checkbox) {
                         checkbox.checked = true;
                     } else {
-                        console.log(perf.blocId);
+                        console.log(perf.voieId);
                     }
                 });
             })
             .catch(error => console.error("Erreur:", error));
         }
         
-        function afficheBlocs(zone) {
-            document.querySelectorAll(".bloc-item").forEach(bloc => {
-                if (bloc.getAttribute("zone") === zone.toString() || zone.toString() == "all") {
-                    bloc.style.display = "block"; // Afficher les blocs de la zone sélectionnée
+        function afficheVoiess(zone) {
+            document.querySelectorAll(".voie-item").forEach(voie => {
+                if (voie.getAttribute("zone") === zone.toString() || zone.toString() == "all") {
+                    voie.style.display = "block"; // Afficher les voies de la zone sélectionnée
                 } else {
-                    bloc.style.display = "none"; // Cacher les autres blocs
+                    voie.style.display = "none"; // Cacher les autres voies
                 }
             });
         }
         
         
         
-        getBlocs();
+        getVoies();
        
 
 

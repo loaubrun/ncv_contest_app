@@ -7,52 +7,34 @@
 </head>
 <body>
 
-    <button onclick="fetchClimbers()">Mettre à jour</button>
+    <button onclick="classementBloc('H')">Hommes</button>
+    <button onclick="classementBloc('F')">Femmes</button>
     <ul id="climberList"></ul>
 
     <script>
         // Fonction pour récupérer la liste des grimpeurs
-        function fetchClimbers() {
-            fetch("http://localhost:3000/classementBloc")
-                .then(response => response.json())
-                .then(data => {
-                    const list = document.getElementById("climberList");
-                    let i = 1;
-                    list.innerHTML = "";
-                    data.forEach(climber => {
-                        const li = document.createElement("li");
-                        li.textContent = `${i} : ${climber.name} - ${climber.score}pts`;
-                        i++;
-                        list.appendChild(li);
-                    });
-                })
-                .catch(error => console.error("Erreur:", error));
-        }
-
-        // Fonction pour ajouter un grimpeur
-        document.getElementById("addClimberForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Empêche le rechargement de la page
-            
-            const name = document.getElementById("name").value;
-            const mail = document.getElementById("mail").value;
-
-            fetch("http://localhost:3000/climbers", {
+        function classementBloc(sexe) {
+            fetch("http://localhost:3000/classementBloc", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ name, mail })
+                body: JSON.stringify({sexe})
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Succès:", data);
-                fetchClimbers(); // Recharger la liste
+                const list = document.getElementById("climberList");
+                let i = 1;
+                list.innerHTML = "";
+                data.forEach(climber => {
+                    const li = document.createElement("li");
+                    li.textContent = `${i} : ${climber.name} - ${climber.score}pts`;
+                    i++;
+                    list.appendChild(li);
+                });
             })
             .catch(error => console.error("Erreur:", error));
-        });
-
-        // Charger la liste au démarrage
-        fetchClimbers();
+        }
     </script>
 </body>
 </html>

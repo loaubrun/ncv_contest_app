@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-// 📌 Récupérer tous les grimpeurs
+// Récupérer tous les grimpeurs
 app.get("/climbers", (req, res) => {
     db.query("SELECT * FROM Climber", (err, results) => {
         if (err) return res.status(500).json({ error: "Erreur serveur" });
@@ -26,11 +26,11 @@ app.get("/climbers", (req, res) => {
     });
 });
 
-// 📌 Ajouter un grimpeur
+// Ajouter un grimpeur
 app.post("/climbers", (req, res) => {
-    const { name, mail } = req.body;
-    db.query("INSERT INTO Climber (name, mail) VALUES (?, ?)", [name, mail], (err, result) => {
-        if (err) return res.status(500).json({ error: "Erreur serveur" });
+    const { name, mail, sexe} = req.body;
+    db.query("INSERT INTO Climber (name, mail, sexe) VALUES (?, ?, ?)", [name, mail, sexe], (err, result) => {
+        if (err) return res.status(500).json({ errohr: "Erreur serveur" });
         res.status(201).json({ id: result.insertId, name, mail });
     });
 });
@@ -97,7 +97,7 @@ app.post("/addPerf", (req, res) => {
 
 // Récupérer tous les blocs
 app.get("/blocs", (req, res) => {
-    db.query("SELECT * FROM Bloc", (err, results) => {
+    db.query("SELECT * FROM Bloc ORDER BY blocName ASC", (err, results) => {
         if (err) return res.status(500).json({ error: "Erreur serveur" });
         res.json(results);
     });
@@ -105,15 +105,15 @@ app.get("/blocs", (req, res) => {
 
 // Importer une image
 app.post("/addBloc", upload.single("image"), (req, res) => {
-    const { blocName, color, juged} = req.body;
+    const { blocName, color, juged, zone} = req.body;
     const photoName = req.file ? `/uploads/${req.file.filename}` : null;
 
-    if (!blocName || !color || !photoName || !juged) {
+    if (!blocName || !color || !photoName || !juged || !zone) {
         return res.status(400).json({ error: "Données incomplètes" });
     }
 
-    db.query("INSERT INTO Bloc (blocName, color, photoName, juged) VALUES (?, ?, ?)", 
-        [blocName, color, photoName, juged], 
+    db.query("INSERT INTO Bloc (blocName, color, photoName, juged, zone) VALUES (?, ?, ?, ?, ?)", 
+        [blocName, color, photoName, juged, zone], 
         (err, result) => {
             if (err) return res.status(500).json({ error: "Erreur serveur" });
             res.json({ message: "Bloc ajouté avec succès", id: result.insertId, photoName });
@@ -122,16 +122,21 @@ app.post("/addBloc", upload.single("image"), (req, res) => {
 });
 
 // Faire les calculs pour le classment bloc
-app.get("/classementBloc", (req, res) => {
+app.post("/classementBloc", (req, res) => {
+    const { sexe } = req.body
     db.query(
-        "SELECT c.name, SUM(tops * pb.top + zones * pb.zone) as score, SUM(essaisTop) essaisTops, SUM(essaisZone) essaisZones FROM (SELECT blocId, 500.0 / NULLIF(SUM(top), 0) as tops, 500/NULLIF(SUM(zone), 0) zones FROM Perf_Bloc GROUP BY blocId) Points JOIN Perf_Bloc pb ON pb.blocId = Points.blocId JOIN Climber c ON pb.climberId = c.climberId GROUP BY c.name ORDER BY score DESC, essaisTops ASC, essaisZones ASC", 
+        'SELECT c.name, SUM(tops * pb.top + zones * pb.zone) as score, SUM(essaisTop) essaisTops, SUM(essaisZone) essaisZones FROM (SELECT blocId, 500.0 / NULLIF(SUM(top), 0) as tops, 500/NULLIF(SUM(zone), 0) zones FROM Perf_Bloc JOIN Climber ON Climber.climberId = Perf_Bloc.climberId WHERE Climber.sexe = ? GROUP BY blocId) Points JOIN Perf_Bloc pb ON pb.blocId = Points.blocId JOIN Climber c ON pb.climberId = c.climberId WHERE c.sexe = ? GROUP BY c.name ORDER BY score DESC, essaisTops ASC, essaisZones ASC',
+        [sexe, sexe],
         (err, results) => {
             if (err) return res.status(500).json({ error: "Erreur serveur" });
             res.json(results);
     });
 });
 
-// 📌 Lancer le serveur sur le port 3000
+
+
+
+//d Lancer le serveur sur le port 3000
 app.listen(3000, () => {
     console.log("Serveur démarré sur http://localhost:3000");
 });

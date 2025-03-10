@@ -12,6 +12,11 @@
     <form id="addClimberForm">
         <input type="text" id="name" placeholder="Nom" required>
         <input type="email" id="mail" placeholder="Email" required>
+        <label>Sexe :</label>
+        <input type="radio" id="homme" name="sexe" value="H">
+        <label for="homme">H</label>
+        <input type="radio" id="femme" name="sexe" value="F">
+        <label for="femme">F</label>
         <button type="submit">Ajouter</button>
     </form>
 
@@ -41,13 +46,15 @@
             
             const name = document.getElementById("name").value;
             const mail = document.getElementById("mail").value;
+            const sexe = (document.getElementsByName('sexe')[0].checked)?"H":"F";
+            console.log(sexe);
 
             fetch("http://localhost:3000/climbers", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ name, mail })
+                body: JSON.stringify({ name, mail , sexe})
             })
             .then(response => response.json())
             .then(data => {
