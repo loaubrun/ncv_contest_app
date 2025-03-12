@@ -3,16 +3,18 @@ import ReactDOM from "react-dom/client";
 import PerformancePage from "./perfBloc";
 import ClassementPage from "./classements";
 import LoginPage from "./login";
+import AdminPage from "./admin";
 
 function Main() {
   const [page, setPage] = useState("login");
   const [climber, setClimber] = useState({});
-  console.log("da", climber);
   return (
     <div>
       {page === "login" && <LoginPage setClimber={setClimber} setPage={setPage} />}
       {page === "performance" && <PerformancePage climber={climber} setPage={setPage}/>}
       {page === "classements" && <ClassementPage climber={climber} setPage={setPage}/>}
+      {page === "admin" && <AdminPage setPage={setPage}/>}
+      <button onClick={() => setPage("admin")}> Admin </button>
     </div>
   );
 }

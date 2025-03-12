@@ -56,7 +56,6 @@ app.post("/login", (req, res) => {
     });
 });
 
-
 // Supprimer la perf d'un grimpeur
 app.delete("/deletePerf", (req, res) => {
     const { blocId, climberId } = req.body;
@@ -99,6 +98,32 @@ app.post("/getBlocs", (req, res) => {
     });
 });
 
+// Récupérer tous les blocs
+app.get("/getBlocs", (req, res) => {
+    db.query("SELECT * FROM Bloc", (err, results) => {
+        if (err) return res.status(500).json({ error: "Erreur serveur" });
+        res.json(results);
+    });
+});
+
+// Mettre à jour un bloc existant
+app.post("/updateBloc", (req, res) => {
+    const { id, blocName, color, juged, zone } = req.body;
+
+    db.query("UPDATE bloc SET blocName = ?, color = ?, juged = ?, zone = ?  WHERE blocId = ?", 
+        [blocName, color, juged, zone, id], 
+        (err, result) => {
+            if (err) return res.status(500).json({ error: "Erreur serveur" });
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({ error: "Bloc non trouvé" });
+            }
+        res.json({ message: "Bloc mis à jour avec succès" });
+    });
+});
+
+
+
 // Ajouter un nouveau bloc
 app.post("/addBloc", upload.single("image"), (req, res) => {
     const { blocName, color, juged, zone} = req.body;
@@ -128,9 +153,6 @@ app.post("/classementBloc", (req, res) => {
             res.json(results);
     });
 });
-
-
-
 
 //d Lancer le serveur sur le port 3000
 app.listen(3000, () => {
