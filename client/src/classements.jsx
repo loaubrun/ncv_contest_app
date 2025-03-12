@@ -1,0 +1,46 @@
+import { useEffect, useState } from "react";
+
+function ClassementPage() {
+    const [classement, setClassement] = useState([]);
+    const sexe = "H";
+
+    useEffect(() => {
+        getClassement();
+    }, []); 
+
+    const getClassement = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/classementBloc", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ sexe : sexe })
+            });
+    
+            const data = await response.json();
+            setClassement(data);
+        } catch (error) {   
+            console.error("Erreur:", error);
+        }
+    };
+
+    return (
+        <div>
+            <h1>Page de classements</h1>
+            <div className="bloc-list">
+                {classement.map((climber) => (
+                    <Climber key={climber.climberId} climber = {climber} />
+                    ))}
+            </div>
+        </div>
+    );
+}
+
+function Climber({ climber }) {
+    return (
+        <div>
+            <p>Nom : {climber.name} - Points : {climber.score} </p>
+        </div>
+    );
+}
+
+export default ClassementPage;

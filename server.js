@@ -43,30 +43,22 @@ app.post("/login", (req, res) => {
         return res.status(400).json({ id: -1, error: "Veuillez fournir un nom et un mail." });
     }
 
-    db.query("SELECT climberId FROM Climber WHERE name = ? AND mail = ?", [name, mail], (err, results) => {
+    db.query("SELECT * FROM Climber WHERE name = ? AND mail = ?", [name, mail], (err, results) => {
         if (err) {
             console.error("Erreur SQL:", err);
             return res.status(500).json({ id: -1, error: "Erreur serveur" });
         }
         if (results.length > 0) {
-            res.json({ id: results[0].climberId });
+            res.json(results);
         } else {
-            res.json({ id: -1 });
+            res.json({ climberId: -1 });
         }
     });
 });
 
-// Recuperer les perfs bloc d'un grimpeur
-app.post("/perf", (req, res) => {
-    const { climberId } = req.body;
-    db.query("SELECT blocId FROM Perf_Bloc WHERE climberId = ?", climberId, (err, results) => {
-        if (err) return res.status(500).json({ error: "Erreur serveur" });
-        res.json(results);
-    });
-});
 
 // Supprimer la perf d'un grimpeur
-app.delete("/perf", (req, res) => {
+app.delete("/deletePerf", (req, res) => {
     const { blocId, climberId } = req.body;
 
     db.query(
@@ -95,15 +87,19 @@ app.post("/addPerf", (req, res) => {
     );
 });
 
-// Récupérer tous les blocs
-app.get("/blocs", (req, res) => {
-    db.query("SELECT * FROM Bloc ORDER BY blocName ASC", (err, results) => {
+// Récupérer tous les blocs et les perfs
+app.post("/getBlocs", (req, res) => {
+    const { climberId } = req.body;
+
+    db.query("SELECT bloc.blocId, blocName, bloc.photoName, color, juged, bloc.zone,  COALESCE(COUNT(perf_bloc.blocId), 0) AS checked FROM bloc LEFT JOIN perf_bloc ON bloc.blocId = perf_bloc.blocId AND perf_bloc.climberId = ? GROUP BY bloc.blocId", 
+        [climberId],
+        (err, results) => {
         if (err) return res.status(500).json({ error: "Erreur serveur" });
         res.json(results);
     });
 });
 
-// Importer une image
+// Ajouter un nouveau bloc
 app.post("/addBloc", upload.single("image"), (req, res) => {
     const { blocName, color, juged, zone} = req.body;
     const photoName = req.file ? `/uploads/${req.file.filename}` : null;
