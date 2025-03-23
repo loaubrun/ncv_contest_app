@@ -26,10 +26,10 @@ function Voies({ climber }) {
     
 
     return (
-        <div>          
+        <div>
             <div className="blocContainer">
                 {voies
-                    .filter(voie => secteur === "all" || voie.zone.toString() === secteur)
+                    .filter(voie => secteur === "all" || voie.secteur.toString() === secteur)
                     .map((voie) => (
                         <Voie key={voie.voieId} voie={voie} climberId={climber.climberId} setVoies={setVoies} voies={voies}/>
                     ))}

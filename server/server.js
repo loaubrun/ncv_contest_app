@@ -9,6 +9,7 @@ app.use("/uploads", express.static("uploads"));
 // Importer les routes
 app.use(require("./routes/auth"));
 app.use(require("./routes/blocs"));
+app.use(require("./routes/voies"));
 app.use(require("./routes/climbers"));
 app.use(require("./routes/perfs"));
 app.use(require("./routes/classement"));

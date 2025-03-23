@@ -28,7 +28,7 @@ function AddNewBloc({ setBlocs }) {
         name: "",
         color: "",
         juged: false,
-        zone: "Dalle",
+        secteur: "Dalle",
         image: null
     });
 
@@ -53,7 +53,7 @@ function AddNewBloc({ setBlocs }) {
         dataToSend.append("color", formData.color);
         dataToSend.append("image", formData.image);
         dataToSend.append("juged", formData.juged ? 1 : 0);
-        dataToSend.append("zone", formData.zone);
+        dataToSend.append("secteur", formData.secteur);
     
         try {
             const response = await fetch("http://localhost:3000/addBloc", {
@@ -72,12 +72,12 @@ function AddNewBloc({ setBlocs }) {
                         color: formData.color,
                         photoName: data.photoName, 
                         juged: formData.juged ? 1 : 0,
-                        zone: formData.zone
+                        secteur: formData.secteur
                     }
                 ]);
     
                 // Réinitialiser le formulaire
-                setFormData({ name: "", color: "", juged: false, zone: "1", image: null });
+                setFormData({ name: "", color: "", juged: false, secteur: "1", image: null });
             } else {
                 console.error("Erreur serveur :", data.error);
             }
@@ -104,7 +104,7 @@ function AddNewBloc({ setBlocs }) {
                 <br />
 
                 <label>Numéro secteur :</label>
-                <select name="zone" value={formData.zone} onChange={handleChange}>
+                <select name="secteur" value={formData.secteur} onChange={handleChange}>
                     <option value="Dalle">Dalle</option>
                     <option value="Petit Dévert">Petit Dévert</option>
                     <option value="Grand Dévert">Grand Dévert</option>
@@ -147,7 +147,7 @@ function ModifBloc({ setBlocs, bloc }) {
         name: bloc.name,
         color: bloc.color,
         juged: bloc.juged,
-        zone: bloc.zone,
+        secteur: bloc.secteur,
         image: null
     });
 
@@ -167,7 +167,7 @@ function ModifBloc({ setBlocs, bloc }) {
         dataToSend.append("name", formData.name);
         dataToSend.append("color", formData.color);
         dataToSend.append("juged", formData.juged ? 1 : 0);
-        dataToSend.append("zone", formData.zone);
+        dataToSend.append("secteur", formData.secteur);
         if (formData.image) {
             dataToSend.append("image", formData.image);
         }
@@ -216,7 +216,7 @@ function ModifBloc({ setBlocs, bloc }) {
                 <br />
 
                 <label>Numéro secteur :</label>
-                <select name="zone" value={formData.zone} onChange={handleChange}>
+                <select name="secteur" value={formData.secteur} onChange={handleChange}>
                     <option value="Dalle">Dalle</option>
                     <option value="Petit Dévert">Petit Dévert</option>
                     <option value="Grand Dévert">Grand Dévert</option>

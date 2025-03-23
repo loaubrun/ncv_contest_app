@@ -24,7 +24,7 @@ function Blocs({ climber }) {
     };
 
 
-    const zones = [
+    const secteurs = [
         { name: "Dalle", points: [[0, 100], [0, 80], [17, 80], [17, 100]] },
         { name: "Petit Dévert", points: [[12, 75], [12, 62], [20, 65], [20, 80]] },
         { name: "Grand Dévert", points: [[15, 60], [15, 45], [27, 40], [25, 63]] },
@@ -55,14 +55,14 @@ function Blocs({ climber }) {
         let rect = event.target.getBoundingClientRect();
         let x = ((event.clientX - rect.left) / rect.width) * 100;
         let y = ((event.clientY - rect.top) / rect.height) * 100;
-        let zoneName = "all";
-        for (let zone of zones) {
-            if (pointInPolygon(x, y, zone.points)) {
-                zoneName = zone.name;
+        let secteurName = "all";
+        for (let secteur of secteurs) {
+            if (pointInPolygon(x, y, secteur.points)) {
+                secteurName = secteur.name;
                 break;
             }
         }
-        setSecteur(zoneName);
+        setSecteur(secteurName);
     };
 
     
@@ -90,7 +90,7 @@ function Blocs({ climber }) {
             
             <div className="blocContainer">
                 {blocs
-                    .filter(bloc => secteur === "all" || bloc.zone.toString() === secteur)
+                    .filter(bloc => secteur === "all" || bloc.secteur.toString() === secteur)
                     .map((bloc) => (
                         <Bloc key={bloc.blocId} bloc={bloc} climberId={climber.climberId} setBlocs={setBlocs} blocs={blocs}/>
                     ))}
