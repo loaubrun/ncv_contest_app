@@ -139,11 +139,12 @@ function Bloc({ bloc, climberId, setBlocs, blocs }) {
                     src="images/mapBloc.png"
                 />
             </div>
-            <div>{bloc.blocName}</div>
+            <div>{bloc.name}</div>
             <input 
-                    type="checkbox" 
-                    checked={bloc.checked} 
-                    onChange={togglePerf} 
+                type="checkbox" 
+                checked={bloc.checked} 
+                onChange={togglePerf} 
+                disabled={bloc.juged === 1}
             />
         </div>
     );

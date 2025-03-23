@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Bloc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-purple-300 flex justify-center items-center h-screen">
+    <div class="w-[350px] bg-purple-400 p-4 rounded-xl shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg">Bloc</button>
+            <button class="bg-black text-white px-3 py-2 rounded-lg">↩</button>
+        </div>
+        
+        <div class="flex justify-center mb-4">
+            <img src="placeholder.png" alt="Schéma Bloc" class="w-32 h-32 bg-white rounded-lg">
+        </div>
+        
+        <div class="bg-purple-500 text-white px-4 py-2 rounded-lg inline-block mb-4">
+            Grand Dévert ✖
+        </div>
+        
+        <div>
+            <ul>
+                <li class="flex items-center justify-between bg-purple-200 p-2 rounded-lg mb-2">
+                    <img src="placeholder.png" alt="Bloc" class="w-10 h-10 rounded-full">
+                    <span class="flex-1 ml-4">Bloc N°1</span>
+                    <input type="checkbox" checked class="w-6 h-6 border-2 border-green-500 rounded-md">
+                </li>
+                <li class="flex items-center justify-between bg-purple-200 p-2 rounded-lg mb-2">
+                    <img src="placeholder.png" alt="Bloc" class="w-10 h-10 rounded-full">
+                    <span class="flex-1 ml-4">Bloc N°2</span>
+                    <input type="checkbox" checked class="w-6 h-6 border-2 border-green-500 rounded-md">
+                </li>
+                <!-- Ajoute plus d'éléments ici -->
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

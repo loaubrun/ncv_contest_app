@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 function ClassementPage() {
     const [classement, setClassement] = useState([]);
-    const sexe = "H";
+    const sexe = "M";
 
     useEffect(() => {
         getClassement();
@@ -26,7 +26,7 @@ function ClassementPage() {
     return (
         <div>
             <h1>Page de classements</h1>
-            <div className="bloc-list">
+            <div>
                 {classement.map((climber) => (
                     <Climber key={climber.climberId} climber = {climber} />
                     ))}

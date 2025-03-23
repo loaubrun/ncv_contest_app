@@ -25,7 +25,7 @@ function BlocModifPage() {
 
 function AddNewBloc({ setBlocs }) {
     const [formData, setFormData] = useState({
-        blocName: "",
+        name: "",
         color: "",
         juged: false,
         zone: "Dalle",
@@ -49,7 +49,7 @@ function AddNewBloc({ setBlocs }) {
         }
     
         const dataToSend = new FormData();
-        dataToSend.append("blocName", formData.blocName);
+        dataToSend.append("name", formData.name);
         dataToSend.append("color", formData.color);
         dataToSend.append("image", formData.image);
         dataToSend.append("juged", formData.juged ? 1 : 0);
@@ -68,7 +68,7 @@ function AddNewBloc({ setBlocs }) {
                     ...prevBlocs,
                     {
                         blocId: data.id,
-                        blocName: formData.blocName,
+                        name: formData.name,
                         color: formData.color,
                         photoName: data.photoName, 
                         juged: formData.juged ? 1 : 0,
@@ -77,7 +77,7 @@ function AddNewBloc({ setBlocs }) {
                 ]);
     
                 // Réinitialiser le formulaire
-                setFormData({ blocName: "", color: "", juged: false, zone: "1", image: null });
+                setFormData({ name: "", color: "", juged: false, zone: "1", image: null });
             } else {
                 console.error("Erreur serveur :", data.error);
             }
@@ -92,7 +92,7 @@ function AddNewBloc({ setBlocs }) {
             <h1>Ajouter un Bloc</h1>
             <form style={{ border: "1px solid gray", padding: "10px", margin: "10px" }} onSubmit={handleSubmit} encType="multipart/form-data">
                 <label>Nom du Bloc :</label>
-                <input type="text" name="blocName" value={formData.blocName} onChange={handleChange} required/>
+                <input type="text" name="name" value={formData.name} onChange={handleChange} required/>
                 <br />
 
                 <label>Couleur :</label>
@@ -144,7 +144,7 @@ function BlocList({blocs, setBlocs}) {
 
 function ModifBloc({ setBlocs, bloc }) {
     const [formData, setFormData] = useState({
-        blocName: bloc.blocName,
+        name: bloc.name,
         color: bloc.color,
         juged: bloc.juged,
         zone: bloc.zone,
@@ -164,7 +164,7 @@ function ModifBloc({ setBlocs, bloc }) {
 
         const dataToSend = new FormData();
         dataToSend.append("id", bloc.blocId);
-        dataToSend.append("blocName", formData.blocName);
+        dataToSend.append("name", formData.name);
         dataToSend.append("color", formData.color);
         dataToSend.append("juged", formData.juged ? 1 : 0);
         dataToSend.append("zone", formData.zone);
@@ -201,10 +201,10 @@ function ModifBloc({ setBlocs, bloc }) {
 
     return (
         <div style={{ border: "1px solid gray", padding: "10px", margin: "10px" }}>
-            <h3>Modifier {bloc.blocName}</h3>
+            <h3>Modifier {bloc.name}</h3>
             <form onSubmit={handleUpdate} encType="multipart/form-data">
                 <label>Nom du Bloc :</label>
-                <input type="text" name="blocName" value={formData.blocName} onChange={handleChange} required />
+                <input type="text" name="name" value={formData.name} onChange={handleChange} required />
                 <br />
 
                 <label>Couleur :</label>
