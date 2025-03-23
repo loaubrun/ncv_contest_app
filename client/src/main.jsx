@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
-import PerformancePage from "./perfBloc";
+import PerformancePage from "./perf";
 import ClassementPage from "./classements";
 import LoginPage from "./login";
 import AdminPage from "./admin";
+import "./styles.css"
+
 
 function Main() {
   const [page, setPage] = useState("login");

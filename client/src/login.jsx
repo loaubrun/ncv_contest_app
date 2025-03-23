@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+function MyComponent() {
+    return <div className="container">Hello, world!</div>;
+}
+
 function LoginPage({ setClimber, setPage }) {
     const [formData, setFormData] = useState({
         name: "",

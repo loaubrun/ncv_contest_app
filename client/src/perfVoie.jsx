@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function Blocs({ climber }) {
+function Voies({ climber }) {
     const [blocs, setBlocs] = useState([]);
     const [secteur, setSecteur] = useState("all");
 
@@ -149,4 +149,4 @@ function Bloc({ bloc, climberId, setBlocs, blocs }) {
     );
 }
 
-export default Blocs;
+export default Voies;

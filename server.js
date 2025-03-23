@@ -18,23 +18,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
-// Récupérer tous les grimpeurs
-app.get("/climbers", (req, res) => {
-    db.query("SELECT * FROM Climber", (err, results) => {
-        if (err) return res.status(500).json({ error: "Erreur serveur" });
-        res.json(results);
-    });
-});
-
-// Ajouter un grimpeur
-app.post("/climbers", (req, res) => {
-    const { name, mail, sexe} = req.body;
-    db.query("INSERT INTO Climber (name, mail, sexe) VALUES (?, ?, ?)", [name, mail, sexe], (err, result) => {
-        if (err) return res.status(500).json({ errohr: "Erreur serveur" });
-        res.status(201).json({ id: result.insertId, name, mail });
-    });
-});
-
 // Se connecter a un utilisateur
 app.post("/login", (req, res) => {
     const { name, mail } = req.body;
@@ -107,22 +90,23 @@ app.get("/getBlocs", (req, res) => {
 });
 
 // Mettre à jour un bloc existant
-app.post("/updateBloc", (req, res) => {
+app.post("/updateBloc", upload.single("image"), (req, res) => {
     const { id, blocName, color, juged, zone } = req.body;
+    const imageName = req.file ? `/uploads/${req.file.filename}` : null;
 
-    db.query("UPDATE bloc SET blocName = ?, color = ?, juged = ?, zone = ?  WHERE blocId = ?", 
-        [blocName, color, juged, zone, id], 
-        (err, result) => {
-            if (err) return res.status(500).json({ error: "Erreur serveur" });
+    const sql = imageName 
+        ? "UPDATE Bloc SET blocName = ?, color = ?, juged = ?, zone = ?, photoName = ? WHERE blocId = ?"
+        : "UPDATE Bloc SET blocName = ?, color = ?, juged = ?, zone = ? WHERE blocId = ?";
 
-            if (result.affectedRows === 0) {
-                return res.status(404).json({ error: "Bloc non trouvé" });
-            }
-        res.json({ message: "Bloc mis à jour avec succès" });
+    const params = imageName 
+        ? [blocName, color, juged, zone, imageName, id] 
+        : [blocName, color, juged, zone, id];
+
+    db.query(sql, params, (err, result) => {
+        if (err) return res.status(500).json({ error: "Erreur serveur" });
+        res.json(result.affectedRows > 0 ? { message: "Bloc mis à jour" } : { error: "Bloc non trouvé" });
     });
 });
-
-
 
 // Ajouter un nouveau bloc
 app.post("/addBloc", upload.single("image"), (req, res) => {
@@ -142,6 +126,92 @@ app.post("/addBloc", upload.single("image"), (req, res) => {
     );
 });
 
+// Ajouter un nouveau bloc
+app.delete("/deleteBloc", (req, res) => {
+    const blocId = req.query.blocId;
+
+    if (!blocId) {
+        return res.status(400).json({ error: "L'id du bloc est requis !" });
+    }
+
+    const sql = "DELETE FROM Bloc WHERE blocId = ?";
+    db.query(sql, [blocId], (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la suppression :", err);
+            return res.status(500).json({ error: "Erreur interne du serveur" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Bloc non trouvé" });
+        }
+
+        res.json({ success: true, message: "Bloc supprimé avec succès !" });
+    });
+});
+
+// Récuperer tous les grimpeurs
+app.get("/getClimbers", (req, res) => {
+    db.query("SELECT * FROM Climber", (err, results) => {
+        if (err) return res.status(500).json({ error: "Erreur serveur" });
+        res.json(results);
+    });
+});
+
+// Mettre à jour un grimpeur existant
+app.post("/updateClimber", upload.single("image"), (req, res) => {
+    const { climberId, name, mail, sexe} = req.body;
+
+    db.query("UPDATE Climber SET name = ?, mail = ?, sexe = ? WHERE climberId = ?", 
+        [name, mail, sexe, climberId], 
+        (err, result) => {
+        if (err) return res.status(500).json({ error: "Erreur serveur" });
+        res.json(result.affectedRows > 0 ? { message: "Bloc mis à jour" } : { error: "Bloc non trouvé" });
+    });
+});
+
+// Ajouter un nouveau bloc
+app.post("/addClimber", upload.single("image"), (req, res) => {
+    const { name, mail, sexe } = req.body;
+    
+    if (!name || !mail || !sexe) {
+        return res.status(400).json({ error: "Données incomplètes" });
+    }
+
+    db.query("INSERT INTO Climber (name, mail, sexe) VALUES (?, ?, ?)", 
+        [name, mail, sexe], 
+        (err, result) => {
+            if (err) return res.status(500).json({ error: "Erreur serveur" });
+            res.json({ message: "Grimpeur ajouté avec succès", id: result.insertId, });
+        }
+    );
+});
+
+app.delete("/deleteClimber", (req, res) => {
+    const climberId = req.query.climberId;
+
+    if (!climberId) {
+        return res.status(400).json({ error: "L'id du grimpeur est requis !" });
+    }
+
+    const sql = "DELETE FROM Climber WHERE climberId = ?";
+    db.query(sql, [climberId], (err, result) => {
+        if (err) {
+            console.error("Erreur lors de la suppression :", err);
+            return res.status(500).json({ error: "Erreur interne du serveur" });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Grimpeur non trouvé" });
+        }
+
+        res.json({ success: true, message: "Grimpeur supprimé avec succès !" });
+    });
+});
+
+
+
+
+
 // Faire les calculs pour le classment bloc
 app.post("/classementBloc", (req, res) => {
     const { sexe } = req.body
@@ -151,6 +221,34 @@ app.post("/classementBloc", (req, res) => {
         (err, results) => {
             if (err) return res.status(500).json({ error: "Erreur serveur" });
             res.json(results);
+    });
+});
+
+app.delete("/restartData", (req, res) => {
+    // Désactiver les contraintes pour éviter les erreurs de clé étrangère
+    db.query("SET FOREIGN_KEY_CHECKS = 0", (err) => {
+        if (err) {
+            console.error("Erreur lors de la désactivation des contraintes :", err);
+            return res.status(500).json({ error: "Erreur serveur" });
+        }
+
+        // Supprimer les données table par table
+        db.query("DELETE FROM Perf_Bloc", (err) => {
+            if (err) return handleError(res, err);
+        });
+        db.query("DELETE FROM Bloc", (err) => {
+            if (err) return handleError(res, err);
+        });
+        db.query("DELETE FROM Climber", (err) => {
+            if (err) return handleError(res, err);
+        });
+        db.query("SET FOREIGN_KEY_CHECKS = 1", (err) => {
+            if (err) {
+                console.error("Erreur lors de la réactivation des contraintes :", err);
+                return res.status(500).json({ error: "Erreur serveur" });
+            }
+        });
+        res.json({ message: "Toutes les données ont été supprimées avec succès" });
     });
 });
 

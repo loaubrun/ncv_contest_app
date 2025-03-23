@@ -1,24 +1,36 @@
 import { useState, useEffect } from "react";
 
-function BlocModifPage({ setAdminPage }) {
-   return (
-    <div>
+function BlocModifPage() {
+    const [blocs, setBlocs] = useState([]);
 
-        <AddNewBloc/>
-        <BlocList/>
+    // On récupere au début tous les blocs déja créés
+    useEffect(() => {
+        fetch("http://localhost:3000/getBlocs")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Erreur lors de la récupération des blocs");
+                }
+                return response.json();
+            })
+            .then(data => setBlocs(data))
+            .catch(error => console.log(error.message));
+    }, []);
+    return (
+    <div>
+        <AddNewBloc setBlocs={setBlocs} />
+        <BlocList blocs={ blocs } setBlocs={ setBlocs } />
     </div>
    )
 }
 
-function AddNewBloc() {
+function AddNewBloc({ setBlocs }) {
     const [formData, setFormData] = useState({
         blocName: "",
         color: "",
         juged: false,
-        zone: "1",
+        zone: "Dalle",
         image: null
     });
-    const [uploadStatus, setUploadStatus] = useState("");
 
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
@@ -30,37 +42,55 @@ function AddNewBloc() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (!formData.image) {
             alert("Veuillez sélectionner une image !");
             return false;
-        };
-
+        }
+    
         const dataToSend = new FormData();
         dataToSend.append("blocName", formData.blocName);
         dataToSend.append("color", formData.color);
         dataToSend.append("image", formData.image);
         dataToSend.append("juged", formData.juged ? 1 : 0);
         dataToSend.append("zone", formData.zone);
-
+    
         try {
             const response = await fetch("http://localhost:3000/addBloc", {
                 method: "POST",
                 body: dataToSend
             });
+    
             const data = await response.json();
-            setUploadStatus(data.message);
-            setFormData({blocName: "", color: "", juged: false, zone: "1", image: null});
+    
+            if (response.ok) {
+                setBlocs((prevBlocs) => [
+                    ...prevBlocs,
+                    {
+                        blocId: data.id,
+                        blocName: formData.blocName,
+                        color: formData.color,
+                        photoName: data.photoName, 
+                        juged: formData.juged ? 1 : 0,
+                        zone: formData.zone
+                    }
+                ]);
+    
+                // Réinitialiser le formulaire
+                setFormData({ blocName: "", color: "", juged: false, zone: "1", image: null });
+            } else {
+                console.error("Erreur serveur :", data.error);
+            }
         } catch (error) {
             console.error("Erreur lors de l'envoi :", error);
-            setUploadStatus("Erreur serveur. Réessayez plus tard.");
         }
     };
+    
 
     return (
         <div>
             <h1>Ajouter un Bloc</h1>
-            <form onSubmit={handleSubmit} encType="multipart/form-data">
+            <form style={{ border: "1px solid gray", padding: "10px", margin: "10px" }} onSubmit={handleSubmit} encType="multipart/form-data">
                 <label>Nom du Bloc :</label>
                 <input type="text" name="blocName" value={formData.blocName} onChange={handleChange} required/>
                 <br />
@@ -75,10 +105,17 @@ function AddNewBloc() {
 
                 <label>Numéro secteur :</label>
                 <select name="zone" value={formData.zone} onChange={handleChange}>
-                    <option value="1">Secteur 1</option>
-                    <option value="2">Secteur 2</option>
-                    <option value="3">Secteur 3</option>
-                    <option value="4">Secteur 4</option>
+                    <option value="Dalle">Dalle</option>
+                    <option value="Petit Dévert">Petit Dévert</option>
+                    <option value="Grand Dévert">Grand Dévert</option>
+                    <option value="Dévert Droit">Dévert Droit</option>
+                    <option value="Diamant">Diamant</option>
+                    <option value="BCMD face droite">BCMD face droite</option>
+                    <option value="BCMD face centrale">BCMD face centrale</option>
+                    <option value="BCMD face gauche">BCMD face gauche</option>
+                    <option value="BCMG face droite">BCMG face droite</option>
+                    <option value="BCMG face centrale">BCMG face centrale</option>
+                    <option value="BCMG face gauche">BCMG face gauche</option>
                 </select>
                 <br />
 
@@ -88,32 +125,16 @@ function AddNewBloc() {
 
                 <button type="submit">Ajouter</button>
             </form>
-
-            {uploadStatus && <p style={{ color: "red" }}>{uploadStatus}</p>}
         </div>
     );
 }
 
-function BlocList() {
-    const [blocs, setBlocs] = useState([]);
-
-    useEffect(() => {
-        fetch("http://localhost:3000/getBlocs")
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Erreur lors de la récupération des blocs");
-                }
-                return response.json();
-            })
-            .then(data => setBlocs(data))
-            .catch(error => console.log(error.message));
-    }, []);
-
+function BlocList({blocs, setBlocs}) {
     return (
         <div>
             <h2>Liste des Blocs</h2>
             {blocs.length > 0 ? (
-                blocs.map((bloc) => <ModifBloc key={bloc.blocId} bloc={bloc} />)
+                blocs.map((bloc) => <ModifBloc key={bloc.blocId} setBlocs = {setBlocs} bloc={bloc} />)
             ) : (
                 <p>Aucun bloc pour l'instant.</p>
             )}
@@ -121,7 +142,7 @@ function BlocList() {
     );
 }
 
-function ModifBloc({ bloc }) {
+function ModifBloc({ setBlocs, bloc }) {
     const [formData, setFormData] = useState({
         blocName: bloc.blocName,
         color: bloc.color,
@@ -129,8 +150,6 @@ function ModifBloc({ bloc }) {
         zone: bloc.zone,
         image: null
     });
-
-    const [uploadStatus, setUploadStatus] = useState("");
 
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
@@ -159,10 +178,24 @@ function ModifBloc({ bloc }) {
                 body: dataToSend
             });
             const data = await response.json();
-            setUploadStatus(data.message);
         } catch (error) {
             console.error("Erreur lors de la mise à jour :", error);
-            setUploadStatus("Erreur serveur. Réessayez plus tard.");
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/deleteBloc?blocId=${bloc.blocId}`, {
+                method: "DELETE"
+            });
+
+            if (response.ok) {
+                setBlocs((prevBlocs) => prevBlocs.filter((b) => b.blocId !== bloc.blocId));
+            } else {
+                console.error("Erreur lors de la suppression du bloc.");
+            }
+        } catch (error) {
+            console.error("Erreur lors de la requête de suppression :", error);
         }
     };
 
@@ -184,10 +217,17 @@ function ModifBloc({ bloc }) {
 
                 <label>Numéro secteur :</label>
                 <select name="zone" value={formData.zone} onChange={handleChange}>
-                    <option value="1">Secteur 1</option>
-                    <option value="2">Secteur 2</option>
-                    <option value="3">Secteur 3</option>
-                    <option value="4">Secteur 4</option>
+                    <option value="Dalle">Dalle</option>
+                    <option value="Petit Dévert">Petit Dévert</option>
+                    <option value="Grand Dévert">Grand Dévert</option>
+                    <option value="Dévert Droit">Dévert Droit</option>
+                    <option value="Diamant">Diamant</option>
+                    <option value="BCMD face droite">BCMD face droite</option>
+                    <option value="BCMD face centrale">BCMD face centrale</option>
+                    <option value="BCMD face gauche">BCMD face gauche</option>
+                    <option value="BCMG face droite">BCMG face droite</option>
+                    <option value="BCMG face centrale">BCMG face centrale</option>
+                    <option value="BCMG face gauche">BCMG face gauche</option>
                 </select>
                 <br />
 
@@ -196,9 +236,8 @@ function ModifBloc({ bloc }) {
                 <br />
 
                 <button type="submit">Modifier</button>
+                <button type="button" onClick={handleDelete}>Supprimer</button>
             </form>
-
-            {uploadStatus && <p style={{ color: "green" }}>{uploadStatus}</p>}
         </div>
     );
 }
