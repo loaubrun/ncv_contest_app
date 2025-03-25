@@ -79,6 +79,7 @@ div {
 
 .map {
     width: 50%;  /* L’image prend 50% de la largeur de son conteneur */
+    max-width: 300px;
     height: auto; /* Garde le ratio de l'image */
     display: block; /* Évite les espaces blancs indésirables */
     object-fit: cover; /* Ajuste l’image sans la déformer */

@@ -10,7 +10,7 @@ function ClassementPage() {
 
     const getClassement = async () => {
         try {
-            const response = await fetch("http://localhost:3000/classementBloc", {
+            const response = await fetch("http://localhost:3000/classementVoie", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ sexe : sexe })

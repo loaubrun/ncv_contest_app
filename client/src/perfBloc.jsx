@@ -103,7 +103,7 @@ function Bloc({ bloc, climberId, setBlocs, blocs }) {
     
 
     const togglePerf = async () => {
-        const url = bloc.checked ? "http://localhost:3000/deletePerf" : "http://localhost:3000/addPerf";
+        const url = bloc.checked ? "http://localhost:3000/deletePerfBloc" : "http://localhost:3000/addPerfBloc";
         const method = bloc.checked ? "DELETE" : "POST";
 
         try {

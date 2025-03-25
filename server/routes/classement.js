@@ -15,4 +15,24 @@ router.post("/classementBloc", (req, res) => {
     });
 });
 
+// Récupérer le classement des grimpeurs en fonction de leur sexe en voie
+router.post("/classementVoie", (req, res) => {
+    const { sexe } = req.body;
+    db.query(
+        `SELECT climber.name, SUM(point_voie.points * POWER(perf_voie.maxDegaine / voie.nbDegaine, 2)) AS score
+        FROM point_voie 
+        JOIN voie ON point_voie.cotation = voie.cotation
+        JOIN perf_voie ON voie.voieId = perf_voie.voieId
+        JOIN climber ON perf_voie.climberId = climber.climberId
+        WHERE climber.sexe = "?"
+        GROUP BY perf_voie.climberId
+        ORDER BY score DESC;
+        `,
+        [sexe],
+        (err, results) => {
+            if (err) return res.status(500).json({ error: "Erreur serveur" });
+            res.json(results);
+    });
+});
+
 module.exports = router;

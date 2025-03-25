@@ -40,9 +40,50 @@ function Voies({ climber }) {
 
 function Voie({ voie, climberId, setVoies, voies }) {
 
+
+    const setPerf = async (perf) => {
+        const url = perf === 0 ? "http://localhost:3000/deletePerfVoie" : "http://localhost:3000/addPerfVoie";
+        const method = perf === 0 ? "DELETE" : "POST";
+
+        try {
+            const response = await fetch(url, {
+                method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ voieId: voie.voieId, climberId, perf })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erreur lors de la requête");
+            }
+
+            setVoies(voies.map(v => 
+                v.voieId === voie.voieId ? { ...v, perf } : v
+            ));
+        } catch (error) {
+            console.error("Erreur:", error);
+        }
+    }
     return (
-        <div>
+        <div style={{ border: "2px solid black" }}>
             <p>{voie.name}</p>
+            <p>
+                <select value={voie.perf} onChange={(event) => {setPerf(event.target.value)}}>
+                    {Array.from({ length: voie.nbDegaine + 1 }, (_, i) => (
+                        <option key={i} value={i}>{i}</option>
+                    ))}
+                </select>
+                / {voie.nbDegaine}
+            </p>
+
+            <div>
+                Top : 
+                <input 
+                    type="checkbox" 
+                    checked={voie.perf === voie.nbDegaine} 
+                    onChange={() => {setPerf(voie.perf === voie.nbDegaine ? 0 : voie.nbDegaine)}} 
+                />
+            </div>
+            
         </div>
     );
 }
