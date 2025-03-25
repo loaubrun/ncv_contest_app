@@ -1,0 +1,125 @@
+body {
+    background-color: #dcdadf; /* Fond violet clair */
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+}
+
+.entete {
+    background-color: #e4e4e4;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.blocContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100vw; /* Prend toute la largeur de l’écran */
+    box-sizing: border-box; /* Empêche le padding d'ajouter de la largeur */
+}
+
+.bloc {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.bloc > div:nth-child(1) {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+}
+
+.bloc > div:nth-child(2) {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+}
+
+.bloc > div:nth-child(3) {
+    flex: 6;
+    text-align: left;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.bloc input {
+    flex: 1;
+    width: 24px;
+    height: 24px;
+    border: 2px solid #22c55e;
+    border-radius: 4px;
+}
+
+.imageBloc {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 3px solid #d1881a;
+    object-fit: cover;
+}
+
+.imageMap {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.map {
+    width: 50%;  /* L’image prend 50% de la largeur de son conteneur */
+    max-width: 300px;
+    height: auto; /* Garde le ratio de l'image */
+    display: block; /* Évite les espaces blancs indésirables */
+    object-fit: cover; /* Ajuste l’image sans la déformer */
+}
+
+.mapContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.secteurContainer {
+    background-color: #e4e4e4;
+    display: inline-flex; /* Ajuste la largeur au contenu */
+    align-items: center; /* Centre verticalement */
+    padding: 4px 8px; /* 0px en haut/bas, 8px à gauche/droite */
+    border-radius: 8px;
+    margin: 16px;
+    gap: 8px; /* Espacement entre le texte et l’image */
+    font-size: 1rem; /* Taille du texte */
+    line-height: 1; /* Évite l’espace supplémentaire en hauteur */
+    height: auto; /* Ajuste la hauteur au contenu */
+}
+
+.secteurContainer p {
+    margin: 0;
+    padding: 0;
+}
+
+.secteurContainer img {
+    height: 1em;
+    width: auto;
+    cursor: pointer; /* Change le curseur pour montrer que c'est cliquable */
+}
+
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
